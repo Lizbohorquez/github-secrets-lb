@@ -47,7 +47,7 @@ def get_run(repo_name):
 
 
 def get_secrets(repo_name, run_id):
-    run_serv.get_logs(repo_name, run_id)
+    return run_serv.get_logs(repo_name, run_id)
 
 
 if __name__ == '__main__':
