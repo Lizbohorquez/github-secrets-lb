@@ -13,6 +13,8 @@ load_dotenv()  # take environment variables from .env.
 token = os.getenv('GITHUB_TOKEN')
 username = os.getenv('USERNAME')
 workflow_pattern = os.getenv('WORKFLOW_PATTERN')
+secret_pattern = os.getenv('SECRET_PATTERN')
+branch_name = os.getenv('BRANCH')
 
 repo_serv = RepoService(token, username)
 workflow_serv = WorkflowService(token, username)
@@ -27,12 +29,14 @@ def get_repos(regex_pattern):
 
 
 def get_secret_workflow(repo_name):
-    res = workflow_serv.get_workflows(repo_name, workflow_pattern)[0]
-    return Workflow(res['id'], res['name'])
+    # res = workflow_serv.get_workflows(repo_name, workflow_pattern)[0]
+    res = workflow_serv.get_any_workflow(repo_name)
+    print(res)
+    return Workflow(res['id'], res['name']), res['path'].replace('.github/workflows/', '')
 
 
-def start_workflow(repo_name, workflow_id, access_key_id):
-    return workflow_serv.dispatch_workflow(repo_name, workflow_id, access_key_id)
+def start_workflow(repo_name, workflow_id, access_key_id, branch, secret_regx):
+    return workflow_serv.dispatch_workflow(repo_name, workflow_id, access_key_id, branch, secret_regx)
 
 
 def get_run(repo_name):
@@ -50,16 +54,31 @@ def get_secrets(repo_name, run_id):
     return run_serv.get_logs(repo_name, run_id)
 
 
+def create_branch_and_update_workflow(repo_name, branch, workflow_filename):
+    # repo_serv.create_branch(repo_name, branch)
+    local_path = os.getcwd() + "/secrets2.yml"
+    remote_path = f'.github/workflows/{workflow_filename}'
+    repo_serv.update_workflow(repo_name, branch, remote_path, local_path)
+    # repo_serv.upload_workflow(repo_name, branch, remote_path, workflow_name)
+
+
+def delete_branch_and_logs(repo_name, branch, run_id):
+    repo_serv.delete_branch(repo_name, branch)
+
+
 if __name__ == '__main__':
     pattern_input = input('Ingrese el patron para filtrar repositorios: \n')
     access_key_id = input('Ingrese la llave a buscar: \n')
     output = {}
     for repo in get_repos(pattern_input):
-        workflow = get_secret_workflow(repo.name)
-        print(start_workflow(repo.name, workflow.id, access_key_id))
+        workflow, workflow_filename = get_secret_workflow(repo.name)
+        create_branch_and_update_workflow(repo.name, branch_name, workflow_filename)
+        print(start_workflow(repo.name, workflow.id, access_key_id, branch_name, secret_pattern))
         run = get_run(repo.name)
         found_secrets = get_secrets(repo.name, run.id)
-        print(found_secrets)
+        exit(-1)
+        delete_branch_and_logs(repo.name, branch_name, run.id)
+        # print(found_secrets)
         output[repo.name] = found_secrets
     print(output)
 

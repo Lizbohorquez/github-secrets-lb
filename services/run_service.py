@@ -41,3 +41,13 @@ class RunService:
                 print(f'{env}: {p.findall(out)}')
                 result[env] = p.findall(out)
         return result
+
+    # Elimina el run del workflow ejecutado
+    def delete_logs(self, repo, run_id):
+        url = f'https://api.github.com/repos/{self.owner}/{repo}/actions/runs/{run_id}'
+        response = requests.delete(url, headers=self.headers)
+
+        if response.status_code == 204:
+            print(f'Logs eliminados para el run {run_id}')
+        else:
+            print(f'fallo eliminacion de logs para el run {run_id}. Status code: {response.status_code}')

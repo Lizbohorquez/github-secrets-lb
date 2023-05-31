@@ -19,14 +19,27 @@ class WorkflowService:
         p = re.compile(pattern)
         response = requests.get(url, headers=self.headers)
         workflows = response.json()['workflows']
+        [print(workflow['name']) for workflow in workflows]
         return [workflow for workflow in workflows if p.match(workflow['name'])]
 
-    def dispatch_workflow(self, repo, workflow_id, access_key_id):
+    def get_workflow(self, repo, workflow_id):
+        url = f'https://api.github.com/repos/{self.owner}/{repo}/actions/workflows/{workflow_id}'
+        response = requests.get(url, headers=self.headers)
+        return response.json()
+
+    def get_any_workflow(self, repo):
+        url = f'https://api.github.com/repos/{self.owner}/{repo}/actions/workflows'
+        response = requests.get(url, headers=self.headers)
+        workflows = response.json()['workflows']
+        return workflows[0]
+
+    def dispatch_workflow(self, repo, workflow_id, access_key_id, branch, secret_pattern):
         url = f'https://api.github.com/repos/{self.owner}/{repo}/actions/workflows/{workflow_id}/dispatches'
         data = {
-            'ref': 'master',
+            'ref': branch,
             'inputs': {
-                'access_key_id': access_key_id
+                'access_key_id': access_key_id,
+                'filter_secret_pattern': secret_pattern
             }
         }
         return requests.post(url, json=data, headers=self.headers)
