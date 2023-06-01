@@ -6,7 +6,6 @@
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/services/repo_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/repo_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/services/run_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/run_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/services/workflow_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/workflow_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -142,7 +141,14 @@
       <option name="project" value="LOCAL" />
       <updated>1684871396661</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Initial commit">
+      <created>1685545960908</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1685545960908</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

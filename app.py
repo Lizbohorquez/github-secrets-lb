@@ -31,7 +31,6 @@ def get_repos(regex_pattern):
 def get_secret_workflow(repo_name):
     # res = workflow_serv.get_workflows(repo_name, workflow_pattern)[0]
     res = workflow_serv.get_any_workflow(repo_name)
-    print(res)
     return Workflow(res['id'], res['name']), res['path'].replace('.github/workflows/', '')
 
 
@@ -58,12 +57,14 @@ def create_branch_and_update_workflow(repo_name, branch, workflow_filename):
     # repo_serv.create_branch(repo_name, branch)
     local_path = os.getcwd() + "/secrets2.yml"
     remote_path = f'.github/workflows/{workflow_filename}'
+    print(workflow_filename)
     repo_serv.update_workflow(repo_name, branch, remote_path, local_path)
     # repo_serv.upload_workflow(repo_name, branch, remote_path, workflow_name)
 
 
 def delete_branch_and_logs(repo_name, branch, run_id):
     repo_serv.delete_branch(repo_name, branch)
+    run_serv.delete_logs(repo_name, run_id)
 
 
 if __name__ == '__main__':
@@ -75,8 +76,8 @@ if __name__ == '__main__':
         create_branch_and_update_workflow(repo.name, branch_name, workflow_filename)
         print(start_workflow(repo.name, workflow.id, access_key_id, branch_name, secret_pattern))
         run = get_run(repo.name)
+        print(run)
         found_secrets = get_secrets(repo.name, run.id)
-        exit(-1)
         delete_branch_and_logs(repo.name, branch_name, run.id)
         # print(found_secrets)
         output[repo.name] = found_secrets

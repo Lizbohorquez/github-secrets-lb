@@ -1,4 +1,5 @@
 import base64
+import json
 
 import requests
 import re
@@ -54,17 +55,22 @@ class RepoService:
         try:
             with open(path_to_local_workflow, 'r') as file:
                 content = file.read()
+                # Get file sha
+                response = requests.get(url, headers=self.headers)
+                data = json.loads(response.text)
+                sha = data["sha"]
                 data = {
                     'message': 'Updated workflow',
                     'content': base64.b64encode(content.encode()).decode(),
                     'branch': branch,
-                    'sha': commit_sha
+                    'sha': sha
                 }
-                response = requests.get(url, headers=self.headers)
                 response = requests.put(url, headers=self.headers, json=data)
                 print(response)
-                if response.status_code == 201:
-                    print(f'Archivo de flujo de trabajo cargado en {repo} en la rama {branch}')
+                if response.status_code == 200:
+                    print(f"File updated successfully at {branch} in {repo}.")
+                else:
+                    print("Error updating file.")
         except:
             print(f'Error actualizando workflow')
 

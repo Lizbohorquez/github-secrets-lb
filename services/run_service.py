@@ -20,7 +20,7 @@ class RunService:
         response = requests.get(url, headers=self.headers, stream=True)
         file_name = '../logs.zip'
         chunk_size = 128
-        p = re.compile('Is present in.*')
+        p = re.compile('Is present in AWS.*')
         result = {}
         with open(file_name, 'wb') as file:
             for chunk in response.iter_content(chunk_size=chunk_size):
