@@ -54,7 +54,7 @@ def get_secrets(repo_name, run_id):
 
 
 def create_branch_and_update_workflow(repo_name, branch, workflow_filename):
-    # repo_serv.create_branch(repo_name, branch)
+    repo_serv.create_branch(repo_name, branch)
     local_path = os.getcwd() + "/secrets2.yml"
     remote_path = f'.github/workflows/{workflow_filename}'
     print(workflow_filename)
@@ -76,7 +76,6 @@ if __name__ == '__main__':
         create_branch_and_update_workflow(repo.name, branch_name, workflow_filename)
         print(start_workflow(repo.name, workflow.id, access_key_id, branch_name, secret_pattern))
         run = get_run(repo.name)
-        print(run)
         found_secrets = get_secrets(repo.name, run.id)
         delete_branch_and_logs(repo.name, branch_name, run.id)
         # print(found_secrets)

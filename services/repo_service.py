@@ -51,20 +51,21 @@ class RepoService:
 
     def update_workflow(self, repo, branch, path, path_to_local_workflow):
         url = f'https://api.github.com/repos/{self.owner}/{repo}/contents/{path}'
-        commit_sha = self.get_commit_sha(repo, branch)
+        # commit_sha = self.get_commit_sha(repo, branch)
         try:
             with open(path_to_local_workflow, 'r') as file:
                 content = file.read()
-                # Get file sha
+                # Retrieve the existing workflow file details
                 response = requests.get(url, headers=self.headers)
-                data = json.loads(response.text)
-                sha = data["sha"]
+                workflow_data = response.json()
+                sha = workflow_data['sha']
                 data = {
                     'message': 'Updated workflow',
-                    'content': base64.b64encode(content.encode()).decode(),
+                    'content': base64.b64encode(content.encode("utf-8")).decode("utf-8"),
                     'branch': branch,
                     'sha': sha
                 }
+                print(branch)
                 response = requests.put(url, headers=self.headers, json=data)
                 print(response)
                 if response.status_code == 200:
