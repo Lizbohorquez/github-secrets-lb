@@ -70,12 +70,11 @@ class RepoService:
                 response = requests.put(url, headers=self.headers, json=data)
                 print(response)
                 if response.status_code == 200:
-                    print(f"File updated successfully at {branch} in {repo}.")
+                    logger.info(f"File updated successfully at {branch} in {repo}.")
                 else:
                     print("Error updating file.")
         except:
-            print(f'Error actualizando workflow')
-            logger.error(f"Couldn't update workflow in {repo} at {branch}")
+            logger.error(f"Couldn't update workflow in at {branch} in {repo}")
             raise
 
     def upload_workflow(self, repo_name, branch, path_to_workflow, workflow_name):
