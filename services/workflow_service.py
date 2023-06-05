@@ -1,7 +1,9 @@
 import requests
 import re
+import logging
 from datetime import datetime, timedelta
 
+logger = logging.getLogger(__name__)
 
 class WorkflowService:
 
@@ -31,7 +33,13 @@ class WorkflowService:
         url = f'https://api.github.com/repos/{self.owner}/{repo}/actions/workflows'
         response = requests.get(url, headers=self.headers)
         workflows = response.json()['workflows']
-        return workflows[0]
+        try:
+            return workflows[0]
+        except:
+            logger.error(
+                "Couldn't find any workflow in ", repo
+            )
+            raise
 
     def dispatch_workflow(self, repo, workflow_id, access_key_id, branch, secret_pattern):
         url = f'https://api.github.com/repos/{self.owner}/{repo}/actions/workflows/{workflow_id}/dispatches'

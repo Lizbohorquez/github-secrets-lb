@@ -1,8 +1,9 @@
 import base64
-import json
-
 import requests
 import re
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class RepoService:
@@ -35,7 +36,7 @@ class RepoService:
             return commit_sha
         return None
 
-    # Crear la rama "test"
+    # Crear la rama
     def create_branch(self, repo_name, branch):
         commit_sha = self.get_commit_sha(repo_name)
         if commit_sha:
@@ -74,6 +75,8 @@ class RepoService:
                     print("Error updating file.")
         except:
             print(f'Error actualizando workflow')
+            logger.error(f"Couldn't update workflow in {repo} at {branch}")
+            raise
 
     def upload_workflow(self, repo_name, branch, path_to_workflow, workflow_name):
         # self.create_branch(repo_name)
