@@ -1,4 +1,6 @@
 import base64
+import os
+
 import requests
 import re
 import logging
@@ -18,12 +20,45 @@ class RepoService:
         }
 
     def list_all_repos(self):
-        url = f'https://api.github.com/users/{self.owner}/repos'
-        return requests.get(url)
+        org_name = os.getenv('ORG')
+        repositories = []
+        page = 1
+        per_page = 100
+        timeout_seconds = 15  # Set your desired timeout value here
+        if org_name != "":
+            url = f"https://api.github.com/orgs/{org_name}/repos"
+            while True:
+                params = {
+                    "page": page,
+                    "per_page": per_page
+                }
+                try:
+                    response = requests.get(url, headers=self.headers, params=params, timeout=timeout_seconds)
+                    response.raise_for_status()  # Raise an exception for non-2xx status codes
+
+                    data = response.json()
+                    repositories.extend(data)
+
+                    if len(data) < per_page:
+                        break  # Reached the last page
+
+                    page += 1
+
+                except requests.exceptions.RequestException as e:
+                    print("Failed to retrieve repositories:", str(e))
+                    break
+
+
+        else:
+            url = f'https://api.github.com/users/{self.owner}/repos'
+            res = requests.get(url, headers=self.headers)
+            repositories.extend(res.json())
+        return repositories
 
     def filter_repos(self, pattern):
         p = re.compile(pattern)
-        all_repos = self.list_all_repos().json()
+        all_repos = self.list_all_repos()
+        print(len(all_repos))
         filtered_repos = [repo for repo in all_repos if p.match(repo['name'])]
         return filtered_repos
 
