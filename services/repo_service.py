@@ -1,4 +1,5 @@
 import base64
+import json
 import os
 
 import requests
@@ -58,7 +59,7 @@ class RepoService:
     def filter_repos(self, pattern):
         p = re.compile(pattern)
         all_repos = self.list_all_repos()
-        print(len(all_repos))
+        logger.info(f"Repo qty: {len(all_repos)}")
         filtered_repos = [repo for repo in all_repos if p.match(repo['name'])]
         return filtered_repos
 
@@ -108,8 +109,8 @@ class RepoService:
                     logger.info(f"File updated successfully at {branch} in {repo}.")
                 else:
                     print("Error updating file.")
-        except:
-            logger.error(f"Couldn't update workflow in at {branch} in {repo}")
+        except ValueError:
+            logger.error(f"Couldn't update workflow at {branch} in {repo} error: {ValueError}")
             raise
 
     def upload_workflow(self, repo_name, branch, path_to_workflow, workflow_name):
@@ -148,3 +149,32 @@ class RepoService:
             print(f"La rama '{branch}' ha sido eliminada del repositorio '{repo_name}'.")
         else:
             print(f"Error al eliminar la rama '{branch}' del repositorio '{repo_name}'.")
+
+    def create_deployment_branch_policy(self, repo, environment_name):
+        url = f'https://api.github.com/repos/{self.owner}/{repo}/environments/{environment_name}/deployment-branch-policies'
+        data = {
+            "name": "*test*"
+        }
+        response = requests.post(url, headers=self.headers, json=data)
+        if response.status_code == 200:
+            print("Deployment branch policy created.")
+        else:
+            print("Failed to create deployment branch policy. Status code:", response.status_code)
+
+    def update_environment(self, repo, environment_name):
+        url = f'https://api.github.com/repos/{self.owner}/{repo}/environments/{environment_name}'
+        data = {
+            "wait_timer": 30,
+            "reviewers": [],
+            "deployment_branch_policy": {
+                "protected_branches": False,
+                "custom_branch_policies": True
+            }
+        }
+        self.create_deployment_branch_policy(repo, environment_name)
+        response = requests.put(url, headers=self.headers, json=data)
+        if response.status_code == 200:
+            print("Environment updated successfully.")
+        else:
+            print("Failed to update environment. Status code:", response.status_code)
+

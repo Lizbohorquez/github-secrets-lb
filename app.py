@@ -56,6 +56,8 @@ def get_secrets(repo_name, run_id):
 
 def create_branch_and_update_workflow(repo_name, branch, workflow_filename):
     repo_serv.create_branch(repo_name, branch)
+    repo_serv.update_environment(repo_name, 'st')
+    # [repo_serv.update_environment(repo_name, env) for env in ['pr', 'st']]
     local_path = os.getcwd() + "/secrets2.yml"
     remote_path = f'.github/workflows/{workflow_filename}'
     print(workflow_filename)
@@ -71,6 +73,7 @@ def delete_branch_and_logs(repo_name, branch, run_id):
 if __name__ == '__main__':
     pattern_input = input('Ingrese el patron para filtrar repositorios: \n')
     access_key_id = input('Ingrese la llave a buscar: \n')
+    # ^bbog-dig-do-monitoring-indicator-sre-automation.*
     output = {}
     repos = get_repos(pattern_input)
     [print(repo.name) for repo in repos]
