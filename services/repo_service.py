@@ -164,8 +164,8 @@ class RepoService:
     def update_environment(self, repo, environment_name):
         url = f'https://api.github.com/repos/{self.owner}/{repo}/environments/{environment_name}'
         data = {
-            "wait_timer": 30,
-            "reviewers": [],
+            # "wait_timer": 30,
+            # "reviewers": [],
             "deployment_branch_policy": {
                 "protected_branches": False,
                 "custom_branch_policies": True

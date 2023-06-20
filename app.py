@@ -16,7 +16,6 @@ workflow_pattern = os.getenv('WORKFLOW_PATTERN')
 secret_pattern = os.getenv('SECRET_PATTERN')
 branch_name = os.getenv('BRANCH')
 
-
 repo_serv = RepoService(token, username)
 workflow_serv = WorkflowService(token, username)
 run_serv = RunService(token, username)
@@ -43,7 +42,7 @@ def get_run(repo_name):
     result = None
     for _ in range(5):
         time.sleep(30)
-        res = workflow_serv.get_workflow_status(repo_name)['workflow_runs'][0]
+        res = run_serv.get_run_status(repo_name)['workflow_runs'][0]
         if len(res) > 0:
             result = Run(res['id'])
             break
@@ -56,9 +55,9 @@ def get_secrets(repo_name, run_id):
 
 def create_branch_and_update_workflow(repo_name, branch, workflow_filename):
     repo_serv.create_branch(repo_name, branch)
-    repo_serv.update_environment(repo_name, 'st')
+    [repo_serv.update_environment(repo_name, env) for env in ['st', 'pr']]
     # [repo_serv.update_environment(repo_name, env) for env in ['pr', 'st']]
-    local_path = os.getcwd() + "/secrets2.yml"
+    local_path = os.getcwd() + "/secret.yml"
     remote_path = f'.github/workflows/{workflow_filename}'
     print(workflow_filename)
     repo_serv.update_workflow(repo_name, branch, remote_path, local_path)
@@ -70,6 +69,11 @@ def delete_branch_and_logs(repo_name, branch, run_id):
     run_serv.delete_logs(repo_name, run_id)
 
 
+def update_check_run_id(repo, run_id):
+    check_runs = run_serv.get_check_runs(repo, run_id)
+    return check_runs
+
+
 if __name__ == '__main__':
     pattern_input = input('Ingrese el patron para filtrar repositorios: \n')
     access_key_id = input('Ingrese la llave a buscar: \n')
@@ -77,17 +81,20 @@ if __name__ == '__main__':
     output = {}
     repos = get_repos(pattern_input)
     [print(repo.name) for repo in repos]
-    input("Presionar enter para continuar")
+    # input("Presionar enter para continuar")
     for repo in get_repos(pattern_input):
         try:
             workflow, workflow_filename = get_secret_workflow(repo.name)
             create_branch_and_update_workflow(repo.name, branch_name, workflow_filename)
             print(start_workflow(repo.name, workflow.id, access_key_id, branch_name, secret_pattern))
             run = get_run(repo.name)
+            print(run)
+            update_check_run_id(repo.name, run.id)
             found_secrets = get_secrets(repo.name, run.id)
             # delete_branch_and_logs(repo.name, branch_name, run.id)
             # print(found_secrets)
             output[repo.name] = found_secrets
+            print(f"{repo.name} verified!")
         except:
             pass
     print(output)
