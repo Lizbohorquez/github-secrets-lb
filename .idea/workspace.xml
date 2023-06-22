@@ -5,13 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="019dee15-3cc1-429a-86e2-dabb76371534" name="Changes" comment="Added README.md">
-      <change beforePath="$PROJECT_DIR$/.idea/github-secrets.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/github-secrets.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/services/run_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/run_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/services/workflow_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/workflow_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/repo_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/repo_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/repo_service_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test/repo_service_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/run_service_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test/run_service_test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,7 +67,7 @@
       <recent name="$PROJECT_DIR$/service" />
     </key>
   </component>
-  <component name="RunManager" selected="Python tests.Python tests in repo_service_test.py">
+  <component name="RunManager" selected="Python.app">
     <configuration name="app" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="github-secrets" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -92,6 +90,21 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="Python tests for repo_service_test.test_update_environment" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="github-secrets" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/test" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;repo_service_test.test_update_environment&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
     <configuration name="Python tests for run_service_test.test_approve_deployment" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="github-secrets" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -104,21 +117,6 @@
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
       <option name="_new_target" value="&quot;run_service_test.test_approve_deployment&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
-      <method v="2" />
-    </configuration>
-    <configuration name="Python tests for run_service_test.test_get_pending_deployments" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
-      <module name="github-secrets" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/test" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;run_service_test.test_get_pending_deployments&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
@@ -169,11 +167,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python tests.Python tests for repo_service_test.test_update_environment" />
+        <item itemvalue="Python tests.Python tests for run_service_test.test_list_environments" />
         <item itemvalue="Python tests.Python tests in repo_service_test.py" />
         <item itemvalue="Python tests.Python tests in test" />
         <item itemvalue="Python tests.Python tests for run_service_test.test_approve_deployment" />
-        <item itemvalue="Python tests.Python tests for run_service_test.test_list_environments" />
-        <item itemvalue="Python tests.Python tests for run_service_test.test_get_pending_deployments" />
       </list>
     </recent_temporary>
   </component>
@@ -344,7 +342,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/github_secrets$repo_service_test.coverage" NAME="repo_service_test Coverage Results" MODIFIED="1687362982036" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/github_secrets$app.coverage" NAME="app Coverage Results" MODIFIED="1687399947371" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/github_secrets$.coverage" NAME=" Coverage Results" MODIFIED="1687399991698" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test" />
+    <SUITE FILE_PATH="coverage/github_secrets$app.coverage" NAME="app Coverage Results" MODIFIED="1687477369791" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/github_secrets$.coverage" NAME=" Coverage Results" MODIFIED="1687476884720" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test" />
   </component>
 </project>

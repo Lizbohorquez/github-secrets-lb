@@ -7,6 +7,9 @@ load_dotenv()  # take environment variables from .env.
 token = os.getenv('GITHUB_TOKEN')
 username = os.getenv('USERNAME')
 
+# Replace with repo name to test
+REPO = ""
+
 
 @pytest.fixture
 def repo_service():
@@ -25,3 +28,7 @@ def test_filter_repos(repo_service):
     for rep in repo_service.filter_repos(pattern=pattern):
         repo_list.append(rep['name'])
     assert expected_repo in repo_list
+
+
+def test_update_environment(repo_service):
+    repo_service.update_environment(REPO, 'st')

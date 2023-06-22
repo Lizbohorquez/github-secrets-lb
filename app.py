@@ -104,6 +104,10 @@ if __name__ == '__main__':
             # print(found_secrets)
             output[repo.name] = found_secrets
             print(f"{repo.name} verified!")
+            try:
+                repo_serv.update_environment(repo.name, 'st', True)
+            except:
+                logger.error("Error updating st environment to default protected branches.")
         except:
             logger.error(f"Failed to compare secrets in {repo.name}")
     print(output)

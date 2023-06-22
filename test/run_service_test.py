@@ -13,7 +13,7 @@ username = os.getenv('USERNAME')
 branch_name = os.getenv('BRANCH')
 
 # Replace with repo name to test
-REPO = "DevNet-Associate"
+REPO = ""
 
 
 @pytest.fixture
