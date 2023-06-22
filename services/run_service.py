@@ -19,11 +19,15 @@ class RunService:
             'X-GitHub-Api-Version': '2022-11-28',
         }
 
-    def get_run_status(self, repo):
+    def get_run_status(self, repo, workflow_id):
         current_date = datetime.now().strftime("%Y-%m-%d")
-        status = ""
-        url = f'https://api.github.com/repos/{self.owner}/{repo}/actions/runs?status=completed&created={current_date}&per_page=1'
+        url = f'https://api.github.com/repos/{self.owner}/{repo}/actions/workflows/{workflow_id}/runs?status=waiting&created={current_date}&per_page=1'
         response = requests.get(url, headers=self.headers)
+        print(response.json())
+        res = response.json()['workflow_runs']
+        if len(res) == 0:
+            url = f'https://api.github.com/repos/{self.owner}/{repo}/actions/workflows/{workflow_id}/runs?status=completed&created={current_date}&per_page=1'
+            response = requests.get(url, headers=self.headers)
         return response.json()
 
     def get_logs(self, repo, run_id):
@@ -49,7 +53,6 @@ class RunService:
         for env in list(dict.fromkeys(files_to_extract)):
             with open(files_to_extract[env], 'r') as file:
                 out = file.read()
-                print(f'{env}: {p.findall(out)}')
                 result[env] = p.findall(out)
         return result
 
@@ -63,32 +66,17 @@ class RunService:
         else:
             print(f'fallo eliminacion de logs para el run {run_id}. Status code: {response.status_code}')
 
-    def get_check_runs(self, repo, run_id):
-        url = f"https://api.github.com/repos/{self.owner}/{repo}/actions/runs/{run_id}"
-        response = requests.get(url, headers=self.headers)
-        print(response.status_code)
-        if response.status_code == 200:
-            run_data = response.json()
-            check_suite_id = run_data['check_suite_id']
-            print("check suite id:", check_suite_id)
-            try:
-                check_runs = self.get_check_runs_by_suite_id(repo, check_suite_id)
-            except:
-                logger.error("Couldn't get check runs for run id:", run_id)
-                raise
-            return check_runs
-        else:
-            logger.error(f"Failed to retrieve check run ID. Status code: {response.status_code}")
-            raise
+    def approve_pending_deployments(self, repo, run_id, environments):
+        url = f"https://api.github.com/repos/{self.owner}/{repo}/actions/runs/{run_id}/pending_deployments"
+        data = {
+            "environment_ids": environments,
+            "state": "approved",
+            "comment": "Deployments approved..."
+        }
+        response = requests.post(url, headers=self.headers, json=data)
+        return response.json()
 
-    def get_check_runs_by_suite_id(self, repo, check_suite_id):
-        url = f"https://api.github.com/repos/{self.owner}/{repo}/check-suites/{check_suite_id}/check-runs"
+    def list_environments(self, repo):
+        url = f"https://api.github.com/repos/{self.owner}/{repo}/environments"
         response = requests.get(url, headers=self.headers)
-        print(response.status_code)
-        if response.status_code == 200:
-            check_runs_data = response.json()["check_runs"]
-            check_runs = [run["id"] for run in check_runs_data]
-            return check_runs
-        else:
-            print(f"Failed to retrieve check runs. Status code: {response.status_code}")
-            return None
+        return response.json()

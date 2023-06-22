@@ -52,14 +52,14 @@ class WorkflowService:
         }
         return requests.post(url, json=data, headers=self.headers)
 
-    def get_workflow_status(self, repo):
-        current_date = datetime.now().strftime("%Y-%m-%d")
-        url = f'https://api.github.com/repos/{self.owner}/{repo}/actions/runs?status=completed&created={current_date}&per_page=1'
-        # add_headers = {
-        #     'status': 'cancelled',
-        #     'per_page': 1
-        # }
-        # headers = self.headers.update(add_headers)
-        # print(headers)
-        response = requests.get(url, headers=self.headers)
-        return response.json()
+    # def get_workflow_status(self, repo):
+    #     current_date = datetime.now().strftime("%Y-%m-%d")
+    #     url = f'https://api.github.com/repos/{self.owner}/{repo}/actions/runs?status=completed&created={current_date}&per_page=1'
+    #     # add_headers = {
+    #     #     'status': 'cancelled',
+    #     #     'per_page': 1
+    #     # }
+    #     # headers = self.headers.update(add_headers)
+    #     # print(headers)
+    #     response = requests.get(url, headers=self.headers)
+    #     return response.json()
