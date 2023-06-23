@@ -21,13 +21,8 @@ class RunService:
 
     def get_run_status(self, repo, workflow_id):
         current_date = datetime.now().strftime("%Y-%m-%d")
-        url = f'https://api.github.com/repos/{self.owner}/{repo}/actions/workflows/{workflow_id}/runs?status=waiting&created={current_date}&per_page=1'
+        url = f'https://api.github.com/repos/{self.owner}/{repo}/actions/workflows/{workflow_id}/runs?created={current_date}&per_page=1'
         response = requests.get(url, headers=self.headers)
-        print(response.json())
-        res = response.json()['workflow_runs']
-        if len(res) == 0:
-            url = f'https://api.github.com/repos/{self.owner}/{repo}/actions/workflows/{workflow_id}/runs?status=completed&created={current_date}&per_page=1'
-            response = requests.get(url, headers=self.headers)
         return response.json()
 
     def get_logs(self, repo, run_id):
@@ -74,7 +69,7 @@ class RunService:
             "comment": "Deployments approved..."
         }
         response = requests.post(url, headers=self.headers, json=data)
-        return response.json()
+        return response
 
     def list_environments(self, repo):
         url = f"https://api.github.com/repos/{self.owner}/{repo}/environments"

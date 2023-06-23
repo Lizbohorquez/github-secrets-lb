@@ -46,13 +46,13 @@ def start_workflow(repo_name, workflow_id, access_key_id, branch, secret_regx):
 def get_run(repo_name, workflow_id):
     result = None
     for _ in range(5):
+        time.sleep(10)
         try:
             res = run_serv.get_run_status(repo_name, workflow_id)['workflow_runs'][0]
-            result = Run(res['id'])
+            result = Run(res['id'], res['status'])
             break
         except:
             logger.error(f"Attempt {_ + 1} for get run status failed.")
-        time.sleep(10)
     return result
 
 
@@ -96,9 +96,11 @@ if __name__ == '__main__':
             create_branch_and_update_workflow(repo.name, branch_name, workflow_filename)
             print(start_workflow(repo.name, workflow.id, access_key_id, branch_name, secret_pattern))
             run = get_run(repo.name, workflow_filename)
-            print(approve_workflow_run(repo.name, run.id))
-            time.sleep(5)
-            run = get_run(repo.name, workflow_filename)
+            if run.status == 'waiting':
+                res = approve_workflow_run(repo.name, run.id)
+                print(f"Approved code: {res.status_code}")
+                time.sleep(5)
+                run = get_run(repo.name, workflow_filename)
             found_secrets = get_secrets(repo.name, run.id)
             delete_branch_and_logs(repo.name, branch_name, run.id)
             # print(found_secrets)

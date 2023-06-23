@@ -53,3 +53,7 @@ This project aims to compare secrets across multiple GitHub repositories. It pro
    - Select the repositories to compare (individual repositories or organization repositories).
    - Specify any filtering options if desired (e.g., repository name, secret name).
    - The script will retrieve and compare the secrets, displaying the results on the console.
+
+
+Need Approve --> f1
+Not Need Approve -->f2
