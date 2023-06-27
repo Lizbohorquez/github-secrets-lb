@@ -87,9 +87,13 @@ if __name__ == '__main__':
     pattern_input = input('Ingrese el patron para filtrar repositorios: \n')
     access_key_id = input('Ingrese la llave a buscar: \n')
     output = {}
+
     repos = get_repos(pattern_input)
+    print("Repositorios a comparar:")
     [print(repo.name) for repo in repos]
-    # input("Presionar enter para continuar")
+    print("\n")
+    if input("Desea continuar(y/n): ") != "y":
+        exit("Programa terminado por el usuario")
     for repo in get_repos(pattern_input):
         try:
             workflow, workflow_filename = get_secret_workflow(repo.name)
