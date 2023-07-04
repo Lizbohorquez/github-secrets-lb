@@ -14,19 +14,24 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()  # take environment variables from .env.
 token = os.getenv('GITHUB_TOKEN')
-username = os.getenv('USERNAME')
+owner = os.getenv('OWNER')
 workflow_pattern = os.getenv('WORKFLOW_PATTERN')
 secret_pattern = os.getenv('SECRET_PATTERN')
 branch_name = os.getenv('BRANCH')
 
-repo_serv = RepoService(token, username)
-workflow_serv = WorkflowService(token, username)
-run_serv = RunService(token, username)
+repo_serv = RepoService(token, owner)
+workflow_serv = WorkflowService(token, owner)
+run_serv = RunService(token, owner)
 
 environments = ['st', 'pr']
 
 
 def get_repos(regex_pattern):
+    """
+    Get a list of repositories that match a given pattern.
+    Args:regex_pattern (str): Regular expression pattern to filter repositories.
+    Returns: list: List of Repo objects that match the pattern.
+    """
     repo_list = list()
     for rep in repo_serv.filter_repos(pattern=regex_pattern):
         repo_list.append(Repo(rep['id'], rep['name']))
@@ -34,16 +39,38 @@ def get_repos(regex_pattern):
 
 
 def get_secret_workflow(repo_name):
+    """
+    Get the workflow and the workflow file name that contains secrets.
+    Args: repo_name (str): Repository name.
+    Returns: tuple: Tuple containing the Workflow object and the workflow file name.
+    """
     # res = workflow_serv.get_workflows(repo_name, workflow_pattern)[0]
     res = workflow_serv.get_any_workflow(repo_name)
     return Workflow(res['id'], res['name']), res['path'].replace('.github/workflows/', '')
 
 
 def start_workflow(repo_name, workflow_id, access_key_id, branch, secret_regx):
+    """
+    Start the execution of a workflow in a given repository.
+    Args:
+        repo_name (str): Repository name.
+        workflow_id (str): Workflow ID.
+        access_key_id (str): Access key ID.
+        branch (str): Branch name.
+        secret_regx (str): Pattern to search for secrets.
+    Returns: dict: Response from the GitHub API.
+    """
     return workflow_serv.dispatch_workflow(repo_name, workflow_id, access_key_id, branch, secret_regx)
 
 
 def get_run(repo_name, workflow_id):
+    """
+    Get the status of a workflow execution in a given repository.
+    Args:
+        repo_name (str): Repository name.
+        workflow_id (str): Workflow ID.
+    Returns: Run: Run object representing the execution.
+    """
     result = None
     for _ in range(5):
         time.sleep(10)
@@ -57,10 +84,24 @@ def get_run(repo_name, workflow_id):
 
 
 def get_secrets(repo_name, run_id):
+    """
+    Get the secrets found in the execution of a workflow in a given repository.
+    Args:
+        repo_name (str): Repository name.
+        run_id (str): Run ID.
+    Returns: dict: Secrets found in the execution.
+    """
     return run_serv.get_logs(repo_name, run_id)
 
 
 def create_branch_and_update_workflow(repo_name, branch, workflow_filename):
+    """
+    Create a branch in a repository and update the workflow file in the branch.
+    Args:
+        repo_name (str): Repository name.
+        branch (str): Branch name.
+        workflow_filename (str): Workflow file name.
+    """
     repo_serv.create_branch(repo_name, branch)
     [repo_serv.update_environment(repo_name, env) for env in environments]
     # [repo_serv.update_environment(repo_name, env) for env in ['pr', 'st']]
@@ -72,11 +113,25 @@ def create_branch_and_update_workflow(repo_name, branch, workflow_filename):
 
 
 def delete_branch_and_logs(repo_name, branch, run_id):
+    """
+    Delete a branch from a repository and delete the logs of a run.
+    Args:
+        repo_name (str): Repository name.
+        branch (str): Branch name.
+        run_id (str): Run ID.
+    """
     repo_serv.delete_branch(repo_name, branch)
     run_serv.delete_logs(repo_name, run_id)
 
 
 def approve_workflow_run(repo, run_id):
+    """
+    Approve a workflow run in the 'pr' and 'st' environments.
+    Args:
+        repo (str): Repository name.
+        run_id (str): Run ID.
+    Returns: dict: Response from the GitHub API.
+    """
     environments_list = []
     [environments_list.append(env['id']) for env in run_serv.list_environments(repo)['environments'] if env['name'] in ['pr', 'st']]
     response = run_serv.approve_pending_deployments(repo, run_id, environments_list)
@@ -114,9 +169,9 @@ if __name__ == '__main__':
             logger.error(f"Failed to compare secrets in {repo.name}")
     print(output)
 
-    # repo = Repo(token, username)
-    # workflow = Workflow(token, username)
-    # run = Run(token, username)
+    # repo = Repo(token, owner)
+    # workflow = Workflow(token, owner)
+    # run = Run(token, owner)
     # repos = repo.filter_repos(pattern=pattern)
     # [print(repo['name']) for repo in repos]
     # workflows = workflow.get_workflows(repos[0]['name'], workflow_pattern)

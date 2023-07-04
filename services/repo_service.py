@@ -15,6 +15,12 @@ branch_name = os.getenv('BRANCH')
 class RepoService:
 
     def __init__(self, token, username):
+        """
+        Initialize the RepoService instance.
+        Args:
+            token (str): GitHub authentication token.
+            username (str): GitHub username/owner of the repositories.
+        """
         self.token = token
         self.owner = username
         self.headers = {
@@ -24,6 +30,10 @@ class RepoService:
         }
 
     def list_all_repos(self):
+        """
+        Get a list of all repositories.
+        Returns: list: List of repositories.
+        """
         org_name = os.getenv('ORG')
         repositories = []
         page = 1
@@ -60,14 +70,26 @@ class RepoService:
         return repositories
 
     def filter_repos(self, pattern):
+        """
+        Filter repositories based on a given pattern.
+        Args: pattern (str): Regular expression pattern to filter repositories.
+        Returns: List of filtered repositories.
+        """
         p = re.compile(pattern)
         all_repos = self.list_all_repos()
         logger.info(f"Repo qty: {len(all_repos)}")
         filtered_repos = [repo for repo in all_repos if p.match(repo['name'])]
         return filtered_repos
 
-    # Obtener el Sha de la rama "master"
+
     def get_commit_sha(self, repo_name, branch="master"):
+        """
+        Get the commit SHA of a branch in a repository.
+        Args:
+            repo_name (str): Repository name.
+            branch (str, optional): Branch name. Defaults to "master".
+        Returns: (str) Commit SHA of the branch.
+        """
         url = f'https://api.github.com/repos/{self.owner}/{repo_name}/branches/{branch}'
         response = requests.get(url, headers=self.headers)
         if response.status_code == 200:
@@ -75,8 +97,15 @@ class RepoService:
             return commit_sha
         return None
 
-    # Crear la rama
+
     def create_branch(self, repo_name, branch):
+        """
+        Create a branch in a repository.
+        Args:
+            repo_name (str): Repository name.
+            branch (str): Branch name.
+        Returns: (dict) Response from the GitHub API.
+        """
         commit_sha = self.get_commit_sha(repo_name)
         if commit_sha:
             url = f'https://api.github.com/repos/{self.owner}/{repo_name}/git/refs'
@@ -90,6 +119,14 @@ class RepoService:
             return None
 
     def update_workflow(self, repo, branch, path, path_to_local_workflow):
+        """
+        Update a workflow file in a repository.
+        Args:
+            repo (str): Repository name.
+            branch (str): Branch name.
+            path (str): Path to the workflow file.
+            path_to_local_workflow (str): Path to the local workflow file..
+        """
         url = f'https://api.github.com/repos/{self.owner}/{repo}/contents/{path}'
         # commit_sha = self.get_commit_sha(repo, branch)
         try:
@@ -117,6 +154,14 @@ class RepoService:
             raise
 
     def upload_workflow(self, repo_name, branch, path_to_workflow, workflow_name):
+        """
+        Upload a workflow file to a repository.
+        Args:
+            repo_name (str): Repository name.
+            branch (str): Branch name.
+            path_to_workflow (str): Path to the workflow file.
+            workflow_name (str): Name of the workflow.
+        """
         # self.create_branch(repo_name)
         commit_sha = self.get_commit_sha(repo_name, branch)
         url = f'https://api.github.com/repos/{self.owner}/{repo_name}/contents/.github/workflows/{workflow_name}?ref={branch}'
@@ -144,8 +189,14 @@ class RepoService:
         # else:
         #     print(f'No se pudo crear o recuperar la confirmación SHA para la rama {branch} en el repositorio {repo_name}')
 
-    # Elimina la rama "test" del repo filtrado
+
     def delete_branch(self, repo_name, branch):
+        """
+        Delete a branch from a repository.
+        Args:
+            repo_name (str): Repository name.
+            branch (str): Branch name.
+        """
         url = f'https://api.github.com/repos/{self.owner}/{repo_name}/git/refs/heads/{branch}'
         response = requests.delete(url, headers=self.headers)
         if response.status_code == 204:
@@ -154,6 +205,12 @@ class RepoService:
             logger.error(f"Error al eliminar la rama '{branch}' del repositorio '{repo_name}'.")
 
     def create_deployment_branch_policy(self, repo, environment_name):
+        """
+        Create a deployment branch policy for an environment.
+        Args:
+            repo (str): Repository name.
+            environment_name (str): Name of the environment.
+        """
         url = f'https://api.github.com/repos/{self.owner}/{repo}/environments/{environment_name}/deployment-branch-policies'
         data = {
             "name": f"*{branch_name}*"
@@ -165,6 +222,14 @@ class RepoService:
             logger.error("Failed to create deployment branch policy. Status code:", response.status_code)
 
     def update_environment(self, repo, environment_name, is_protected_branches=False):
+        """
+        Update an environment in a repository.
+        Args:
+            repo (str): Repository name.
+            environment_name (str): Name of the environment.
+            is_protected_branches (bool, optional): Flag indicating if the environment has protected branches.
+            Defaults to False.
+        """
         url = f'https://api.github.com/repos/{self.owner}/{repo}/environments/{environment_name}'
         data = {
             "wait_timer": 0,
